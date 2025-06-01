@@ -1,7 +1,6 @@
 {
   "name": "ESPHome Dev",
-  "context": "..",
-  "dockerFile": "Dockerfile",
+  "image": "ghcr.io/esphome/esphome-lint:dev",
   "postCreateCommand": [
     "script/devcontainer-post-create"
   ],
@@ -80,7 +79,8 @@
         "files.associations": {
           "**/.vscode/*.json": "jsonc"
         },
-        "C_Cpp.clang_format_path": "/usr/bin/clang-format-13"
+        "C_Cpp.clang_format_path": "/usr/bin/clang-format-13",
+        "clang-format.executable": "/usr/bin/clang-format-13"
       }
     }
   }

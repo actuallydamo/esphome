@@ -1,0 +1,150 @@
+esphome:
+  name: petkit_fountain
+  friendly_name: Petkit Fountain
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  level: INFO
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+# Enable OTA updates
+ota:
+  password: !secret ota_password
+
+# Enable WiFi
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Petkit Fountain"
+    password: !secret fallback_password
+
+# Enable Bluetooth LE
+esp32_ble_tracker:
+
+# BLE Client setup for Petkit Fountain
+# You need to find the MAC address of your Petkit Fountain using Bluetooth scanning
+ble_client:
+  - mac_address: "XX:XX:XX:XX:XX:XX"  # Replace with your Petkit Fountain MAC address
+    id: petkit_ble_client
+
+# Petkit Fountain Hub Component
+# This is the main component that manages the BLE connection to the Petkit fountain
+petkit_fountain:
+  id: my_petkit_fountain
+  update_interval: 15s  # Default polling interval - how often to update device state
+  receive_timeout: 5s   # How long to wait for a response before timing out
+
+################################
+# Sensor Components
+################################
+
+# Sensors provide numeric values like battery level, voltage, etc.
+sensor:
+  - platform: petkit_fountain
+    petkit_fountain_id: my_petkit_fountain
+    battery_level:
+      name: "Petkit Fountain Battery Level"
+      entity_category: diagnostic
+      # Reports battery percentage (0-100%)
+
+    voltage:
+      name: "Petkit Fountain Battery Voltage"
+      entity_category: diagnostic
+      # Reports battery voltage in volts
+
+    filter_percentage:
+      name: "Petkit Fountain Filter Life"
+      # Reports remaining filter life percentage (0-100%)
+      # When approaching 0%, consider replacing the filter
+
+    pump_runtime:
+      name: "Petkit Fountain Pump Runtime"
+      entity_category: diagnostic
+      # Reports the total pump runtime in hours
+
+################################
+# Binary Sensor Components
+################################
+
+# Binary sensors provide ON/OFF state information
+binary_sensor:
+  - platform: petkit_fountain
+    petkit_fountain_id: my_petkit_fountain
+    power_status:
+      name: "Petkit Fountain Power Status"
+      # ON when the fountain is powered on, OFF when powered off
+
+    water_missing:
+      name: "Petkit Fountain Water Missing"
+      # ON when water level is too low, OFF when water level is adequate
+      # When ON, consider adding water to the fountain
+
+    filter_warning:
+      name: "Petkit Fountain Filter Warning"
+      # ON when filter needs replacement, OFF when filter is good
+      # When ON, consider replacing the filter
+
+    breakdown:
+      name: "Petkit Fountain Breakdown"
+      # ON when there's a device malfunction, OFF when operating normally
+      # When ON, check the fountain for issues (blocked pump, etc.)
+
+    led_status:
+      name: "Petkit Fountain LED Status"
+      # ON when the LED light is on, OFF when the LED is off
+
+################################
+# Button Components
+################################
+
+# Buttons allow triggering one-time actions
+button:
+  - platform: petkit_fountain
+    petkit_fountain_id: my_petkit_fountain
+    reset_filter:
+      name: "Petkit Fountain Reset Filter"
+      # Press this button after replacing the filter to reset the filter life counter
+
+################################
+# Switch Components
+################################
+
+# Switches allow controlling ON/OFF states
+switch:
+  - platform: petkit_fountain
+    petkit_fountain_id: my_petkit_fountain
+    power:
+      name: "Petkit Fountain Power"
+      # Controls the fountain's power state
+      # ON turns on the fountain, OFF turns it off
+
+    led:
+      name: "Petkit Fountain LED Light"
+      # Controls the fountain's LED light
+      # ON turns on the LED light, OFF turns it off
+
+################################
+# Select Components
+################################
+
+# Selects allow choosing from predefined options
+select:
+  - platform: petkit_fountain
+    petkit_fountain_id: my_petkit_fountain
+    mode:
+      name: "Petkit Fountain Mode"
+      # Select between "Normal" and "Smart" mode
+      # - Normal mode: constant operation, keeps running continuously
+      # - Smart mode: intelligent operation that conserves energy by running intermittently
